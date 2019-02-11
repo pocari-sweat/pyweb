@@ -1,7 +1,31 @@
 from flask import Flask, g, request, Response, make_response
+from datetime import date, datetime
 
 app = Flask(__name__)
 app.debug = True
+
+
+def ymd(fmt):
+    def trans(date_str):
+        return datetime.strptime(date_str, fmt)
+    return trans
+
+
+@app.route('/dt')
+def dt():
+    datestr = request.values.get('date', date.today(), type=ymd('%Y-%m-%d'))
+    return "우리나라 시간 형식: " + str(datestr)
+
+# app.config['SERVER_NAME'] = 'local.com:5000'
+
+# @app.route("/sd")
+# def helloworld_local():
+#     return "Hello Local.com!"
+
+
+# @app.route("/sd", subdomain="g")
+# def helloworld22():
+#     return "Hello G.Local.com!!!"
 
 @app.route('/rp')
 def rp():
