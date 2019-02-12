@@ -1,15 +1,85 @@
 from flask import Flask, g, request, Response, make_response
-from datetime import date, datetime
+from flask import session, render_template, Markup
+from datetime import date, datetime, timedelta
 
 app = Flask(__name__)
 app.debug = True
+# app.jinja_env.trim_blocks = True
 
+app.config.update(
+	SECRET_KEY='X1243yRH!mMwf',
+	SESSION_COOKIE_NAME='pyweb_flask_session',
+	PERMANENT_SESSION_LIFETIME=timedelta(31)      # 31 days
+)
+
+@app.route('/tmpl2')
+def tmpl2():
+    a = (1, "만남1", "김건모", False, [])
+    b = (2, "만남2", "노사연", True, [a])
+    c = (3, "만남3", "익명", False, [a, b])
+    d = (4, "만남4", "익명", False, [a, b, c])
+
+    return render_template("index.html", lst2=[a, b, c, d])
+
+
+@app.route("/tmpl")
+def t():
+    tit = Markup("<strong>Title</strong>")
+    mu = Markup("<h1>iii = <i>%s</i></h1>")
+    h = mu % "Italic"
+    print("h=", h)
+
+    lst = [("만남1", "김건모", True), ("만남2", "노사연", True),
+           ("만남3", "노사봉", False), ("만남4", "아무개", False)]
+           
+    return render_template('index.html', title=tit, mu=h, lst=lst)
+
+@app.route('/wc')
+def wc():
+    key = request.args.get('key')
+    val = request.args.get('val')
+    res = Response("SET COOKIE")
+    res.set_cookie(key, val)
+    session['Token'] = '123X'
+    return make_response(res)
+
+
+@app.route('/rc')
+def rc():
+    key = request.args.get('key')  #token
+    val = request.cookies.get(key)
+    return "cookie['" + key + "] = " + val + " , " + session.get('Token')
+
+@app.route('/delsess')
+def delsess():
+    if session.get('Token'):
+        del session['Token']
+    return "Session이 삭제되었습니다!"
+
+
+@app.route('/reqenv')
+def reqenv():
+    print(">> is_xhr=", request.is_xhr)
+    print(">> json = ", request.get_json())
+    return ('REQUEST_METHOD: %(REQUEST_METHOD) s <br>'
+            'SCRIPT_NAME: %(SCRIPT_NAME) s <br>'
+            'PATH_INFO: %(PATH_INFO) s <br>'
+            'QUERY_STRING: %(QUERY_STRING) s <br>'
+            'SERVER_NAME: %(SERVER_NAME) s <br>'
+            'SERVER_PORT: %(SERVER_PORT) s <br>'
+            'SERVER_PROTOCOL: %(SERVER_PROTOCOL) s <br>'
+            'wsgi.version: %(wsgi.version) s <br>'
+            'wsgi.url_scheme: %(wsgi.url_scheme) s <br>'
+            'wsgi.input: %(wsgi.input) s <br>'
+            'wsgi.errors: %(wsgi.errors) s <br>'
+            'wsgi.multithread: %(wsgi.multithread)s <br>'
+            'wsgi.multiprocess: %(wsgi.multiprocess) s <br>'
+            'wsgi.run_once: %(wsgi.run_once) s') % request.environ
 
 def ymd(fmt):
     def trans(date_str):
         return datetime.strptime(date_str, fmt)
     return trans
-
 
 @app.route('/dt')
 def dt():
