@@ -12,10 +12,19 @@ app.config.update(
 	PERMANENT_SESSION_LIFETIME=timedelta(31)      # 31 days
 )
 
+
+@app.route('/')
+def idx():
+    return render_template('app.html', ttt='TestTTT')
+
+@app.route('/top100')
+def top100():
+    return render_template('application.html', title="MAIN!!")
+
+
 @app.route('/main')
 def main():
     return render_template('main.html', title="MAIN!!")
-
 
 class Nav:
     def __init__(self, title, url='#', children=[]):
@@ -162,9 +171,9 @@ def res1():
 def helloworld2():
     return "Hello World!" + getattr(g, 'str', '111')
 
-@app.route("/")
-def helloworld():
-    return "Hello Flask World!!"
+# @app.route("/")
+# def helloworld():
+#     return "Hello Flask World!!"
 
 
 @app.teardown_request
