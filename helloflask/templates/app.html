@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% import "macro/tests.html" as cm %}
+{% import "macro/tests.html" as cm with context %}
 {% from "macro/tests.html" import test_macro %}
 
 {% block test %}
-    <p>{{ cm.test_macro('TTTTTTTT1122333') }}</p>
+    <p>{{ttt}}::{{ cm.test_macro('TTTTTTTT1122333') }}</p>
     <p>{{ test_macro('QQQQQQQQQQQ') }}</p>
 
     {% call(x) cm.test_macro2('Hong', 'bbb') %}
