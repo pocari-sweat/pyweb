@@ -1,0 +1,28 @@
+{% macro input(type='text', id='', name='', value='', class='') -%}
+<input type="{{type}}" 
+    {% if id %}id="{{id}}"{% endif %}
+    name="{{name}}"
+    value="{{value}}"
+    class="form-control {{class}}" />
+{%- endmacro %}
+
+{% macro radio(id, name, value='', text='', checked='', class='') -%}
+    <div class="custom-control custom-radio">
+        <input class="custom-control-input {{class}}" type="radio"
+               name="{{name}}"
+               id="{{id}}"
+               value="{{value}}"
+               {{checked}}>
+        <label class="custom-control-label" for="{{id}}">
+            {{text}}
+        </label>
+    </div>
+{%- endmacro %}
+
+{% macro radios(lst, class='') -%}
+<div class="form-group">
+    {% for r in lst %}
+        {{radio(r.id, r.name, r.value, r.text, r.checked)}}
+    {% endfor %}
+</div>
+{%- endmacro %}

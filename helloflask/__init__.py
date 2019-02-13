@@ -1,6 +1,8 @@
 from flask import Flask, g, request, Response, make_response
 from flask import session, render_template, Markup
 from datetime import date, datetime, timedelta
+import os
+# from utils.a import ttt
 
 app = Flask(__name__)
 app.debug = True
@@ -12,10 +14,29 @@ app.config.update(
 	PERMANENT_SESSION_LIFETIME=timedelta(31)      # 31 days
 )
 
+class FormInput:
+    def __init__(self, id='', name='', value='', checked='', text='', type='text'):
+        self.id = id
+        self.name = name
+        self.value = value
+        self.checked = checked
+        self.text = text
+        self.type = type
 
 @app.route('/')
 def idx():
-    return render_template('app.html', ttt='TestTTT')
+    rds = []
+    for i in [1,2,3]:
+        id = 'r' + str(i)
+        name = 'radiotest'
+        value = i
+        checked = ''
+        if i == 2:
+            checked = 'checked'
+        text = 'RadioTest' + str(i)
+        rds.append( FormInput(id, name, value, checked, text) )
+
+    return render_template('app.html', ttt='TestTTT999', radioList=rds)
 
 @app.route('/top100')
 def top100():

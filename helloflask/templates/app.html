@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% import "macro/tests.html" as cm with context %}
 {% from "macro/tests.html" import test_macro %}
+{% from "macro/forms.html" import input, radio, radios %}
 
 {% block test %}
     <p>{{ttt}}::{{ cm.test_macro('TTTTTTTT1122333') }}</p>
@@ -9,6 +10,32 @@
     {% call(x) cm.test_macro2('Hong', 'bbb') %}
         <p>This is app.html.call block: <strong>{{x}}</strong></p>
     {% endcall %}
+
+    <form class="container">
+        <div class="form-group">
+            {{radio('r1', 'rdo', 'val1', 'Value1')}}
+            {{radio('r2', 'rdo', 'val2', 'Value2', "checked")}}
+            {{radio('r3', 'rdo', 'val3', 'Value3')}}
+        </div>
+
+        {{radios(radioList)}}
+        
+        
+    </form>
+
+    <!-- Default unchecked -->
+    <div class="custom-control custom-radio">
+        <input type="radio" class="custom-control-input" id="defaultUnchecked" name="defaultExampleRadios">
+        <label class="custom-control-label" for="defaultUnchecked">Default unchecked</label>
+    </div>
+    
+    <!-- Default checked -->
+    <div class="custom-control custom-radio">
+        <input type="radio" class="custom-control-input" id="defaultChecked" name="defaultExampleRadios" checked>
+        <label class="custom-control-label" for="defaultChecked">Default checked</label>
+    </div>
+
+    {{input('password')}}
 {% endblock %}
 
 {% block main %}
