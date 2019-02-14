@@ -26,7 +26,6 @@ def dated_url_for(endpoint, **values):
             values['q'] = int(os.stat(file_path).st_mtime)
     return url_for(endpoint, **values)
 
-
 class FormInput:
     def __init__(self, id='', name='', value='', checked='', text='', type='text'):
         self.id = id
@@ -35,6 +34,27 @@ class FormInput:
         self.checked = checked
         self.text = text
         self.type = type
+
+
+@app.template_filter('ymd')               # cf. Handlebars' helper
+def datetime_ymd(dt, fmt='%m-%d'):
+    if isinstance(dt, date):
+        return "<strong>%s</strong>" % dt.strftime(fmt)
+    else:
+        return dt
+
+@app.template_filter('simpledate')
+def simpledate(dt):
+    if not isinstance(dt, date):
+        dt = datetime.strptime(dt, '%Y-%m-%d %H:%M')
+
+    # if ( datetime.now() - dt) < timedelta(1):
+    if (datetime.now() - dt).days < 1:
+        fmt = "%H:%M"
+    else:
+        fmt = "%m/%d"
+
+    return "<strong>%s</strong>" % dt.strftime(fmt)
 
 @app.route('/')
 def idx():
@@ -49,7 +69,11 @@ def idx():
         text = 'RadioTest' + str(i)
         rds.append( FormInput(id, name, value, checked, text) )
 
-    return render_template('app.html', ttt='TestTTT999', radioList=rds)
+    # today = date.today()
+    # today = datetime.now()
+    # today = datetime.strptime('2019-02-14 09:22', '%Y-%m-%d %H:%M')
+    today = '2019-02-14 09:22'
+    return render_template('app.html', ttt='TestTTT999', radioList=rds, today=today)
 
 @app.route('/top100')
 def top100():

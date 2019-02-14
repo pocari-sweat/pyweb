@@ -4,6 +4,27 @@
 {% from "macro/forms.html" import input, radio, radios, textarea, checkbox, select, modal %}
 
 {% block test %}
+    <p>{{today | ymd('%H:%M') | safe}}</p>
+    <p>{{today | simpledate | safe}}</p>
+    <p>{{ 3096 | filesizeformat(True) }}</p>
+    <p>{{ "  3096.53456" | float | round(2) }}</p>
+    <div>
+        <table>
+        {% for row in range(-2,32) | batch(7, '&nbsp;') %}
+        <tr>
+            {% for col in row %}
+                <td>{{col | safe}}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+        </table>
+    </div>
+    <pre>
+{{'abc' | center(40)}}
+{{'abcsdfdsaffdsadasa' | center(40)}}
+{{ ('abcsdfdsaffdsadasa' * 5) | wordwrap(40)}}
+{{ ('abcsdfdsaffdsadasa' * 5) | truncate(40)}}
+    </pre>
     <p>{{ttt}}::{{ cm.test_macro('TTTTTTTT1122333') }}</p>
     <p>{{ test_macro('QQQQQQQQQQQ') }}</p>
 
@@ -30,8 +51,14 @@
     <button type="button" onclick="openModal('mdl1')" class="btn btn-primary">Open
         modal Test</button>
 
-    {% call modal('mdl1', '테스트 모달', 'fas fa-users', False) %}
+    {% call modal('mdl1', '테스트 모달', 'fas fa-users', True, "fn_test()") %}
         <h3>Modal body</h3>
+        <script>
+            function fn_test() {
+                alert('qqqqqqqqqqqqqqqqqqqqq');
+                closeModal('mdl1');
+            }
+        </script>
     {% endcall %}
 
 
