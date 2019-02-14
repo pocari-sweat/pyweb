@@ -1,6 +1,7 @@
 from flask import Flask, g, request, Response, make_response
 from flask import session, render_template, Markup, url_for
 from datetime import date, datetime, timedelta
+from dateutil.relativedelta import relativedelta
 import os
 
 app = Flask(__name__)
@@ -73,7 +74,12 @@ def idx():
     # today = datetime.now()
     # today = datetime.strptime('2019-02-14 09:22', '%Y-%m-%d %H:%M')
     today = '2019-02-14 09:22'
-    return render_template('app.html', ttt='TestTTT999', radioList=rds, today=today)
+    d = datetime.strptime("2019-03-01", "%Y-%m-%d")
+    sdt = d.weekday() * -1
+    nextMonth = d + relativedelta(months=1)
+    mm = d.month
+    edt = (nextMonth - timedelta(1)).day + 1
+    return render_template('app.html', sdt=sdt, edt=edt, mm=mm, ttt='TestTTT999', radioList=rds, today=today)
 
 @app.route('/top100')
 def top100():
