@@ -57,6 +57,35 @@ def simpledate(dt):
 
     return "<strong>%s</strong>" % dt.strftime(fmt)
 
+def make_date(dt, fmt):
+    if not isinstance(dt, date):
+        return datetime.strptime(dt, fmt)
+    else:
+        return dt
+
+@app.template_filter('sdt')
+def sdt(dt, fmt='%Y-%m-%d'):
+    d = make_date(dt, fmt)
+    wd = d.weekday()
+    # if wd == 6:
+    #     return 1
+    # else:
+    #     return wd
+    return (1 if wd == 6 else wd) * -1
+
+
+@app.template_filter('month')
+def month(dt, fmt='%Y-%m-%d'):
+    d = make_date(dt, fmt)
+    return d.month
+
+@app.template_filter('edt')
+def edt(dt, fmt='%Y-%m-%d'):
+    d = make_date(dt, fmt)
+    nextMonth = d + relativedelta(months=1)
+    return (nextMonth - timedelta(1)).day + 1
+
+
 @app.route('/')
 def idx():
     rds = []
@@ -75,11 +104,10 @@ def idx():
     # today = datetime.strptime('2019-02-14 09:22', '%Y-%m-%d %H:%M')
     today = '2019-02-14 09:22'
     d = datetime.strptime("2019-03-01", "%Y-%m-%d")
-    sdt = d.weekday() * -1
-    nextMonth = d + relativedelta(months=1)
-    mm = d.month
-    edt = (nextMonth - timedelta(1)).day + 1
-    return render_template('app.html', sdt=sdt, edt=edt, mm=mm, ttt='TestTTT999', radioList=rds, today=today)
+
+    # year = 2019
+    year = request.args.get('year', date.today().year, int)
+    return render_template('app.html', year=year, ttt='TestTTT999', radioList=rds, today=today)
 
 @app.route('/top100')
 def top100():
