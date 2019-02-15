@@ -2,9 +2,11 @@ from flask import Flask, g, request, Response, make_response
 from flask import session, render_template, Markup, url_for
 from datetime import date, datetime, timedelta
 import os
+from helloflask.init_db import init_database, db_session
 
 app = Flask(__name__)
 import helloflask.views
+import helloflask.tests
 import helloflask.filters
 
 app.debug = True
@@ -33,8 +35,9 @@ def override_url_for():
 
 
 @app.before_first_request
-def beforeFirst():
+def beforeFirstRequest():
     print(">> before_first_request!!")
+    init_database()   # initialize database 
 
 
 @app.after_request
@@ -51,5 +54,6 @@ def teardown_request(exception):
 @app.teardown_appcontext
 def teardown_context(exception):
     print(">>> teardown context!!", exception)
+    db_session.remove()   # remove used db-session
 
 
