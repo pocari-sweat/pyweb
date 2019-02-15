@@ -1,14 +1,19 @@
 {% extends "l2.html" %}
 {% block title %} {{title}} {% endblock %}
 
-{% for item in [1,2,3] %}
-    {% block title2 scoped %} <p>XXXXXXXXXX {{item}}</p> {% endblock %}
-{% endfor %}
-
 {% block section %}
 <div>
     {{ super() }}
     aaaaaaaaaaaa
+    <div>
+        <ul>
+            {% for user in userlist %}
+                <li>{{user.id}}.{{user.email}} ({{user.nickname}})</li>
+            {% else %}
+                <li>There is no users.</li>
+            {% endfor %}
+        </ul>
+    </div>
 </div>
 {% endblock %}
 
