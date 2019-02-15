@@ -1,113 +1,17 @@
 from flask import Flask, g, request, Response, make_response
 from flask import session, render_template, Markup, url_for
 from datetime import date, datetime, timedelta
-from dateutil.relativedelta import relativedelta
 import os
 
-app = Flask(__name__)
-app.debug = True
-app.jinja_env.trim_blocks = True
+from helloflask.utils import routes
+from helloflask.utils.app import app
+# from .utils.app import app
 
-app.config.update(
-	SECRET_KEY='X1243yRH!mMwf',
-	SESSION_COOKIE_NAME='pyweb_flask_session',
-	PERMANENT_SESSION_LIFETIME=timedelta(31)      # 31 days
-)
-
-@app.context_processor
-def override_url_for():
-    return dict(url_for=dated_url_for)
-
-def dated_url_for(endpoint, **values):
-    if endpoint == 'static':
-        filename = values.get('filename', None)
-        if filename:
-            file_path = os.path.join(app.root_path,
-                                     endpoint, filename)
-            values['q'] = int(os.stat(file_path).st_mtime)
-    return url_for(endpoint, **values)
-
-class FormInput:
-    def __init__(self, id='', name='', value='', checked='', text='', type='text'):
-        self.id = id
-        self.name = name
-        self.value = value
-        self.checked = checked
-        self.text = text
-        self.type = type
-
-
-@app.template_filter('ymd')               # cf. Handlebars' helper
-def datetime_ymd(dt, fmt='%m-%d'):
-    if isinstance(dt, date):
-        return "<strong>%s</strong>" % dt.strftime(fmt)
-    else:
-        return dt
-
-@app.template_filter('simpledate')
-def simpledate(dt):
-    if not isinstance(dt, date):
-        dt = datetime.strptime(dt, '%Y-%m-%d %H:%M')
-
-    # if ( datetime.now() - dt) < timedelta(1):
-    if (datetime.now() - dt).days < 1:
-        fmt = "%H:%M"
-    else:
-        fmt = "%m/%d"
-
-    return "<strong>%s</strong>" % dt.strftime(fmt)
-
-def make_date(dt, fmt):
-    if not isinstance(dt, date):
-        return datetime.strptime(dt, fmt)
-    else:
-        return dt
-
-@app.template_filter('sdt')
-def sdt(dt, fmt='%Y-%m-%d'):
-    d = make_date(dt, fmt)
-    wd = d.weekday()
-    # if wd == 6:
-    #     return 1
-    # else:
-    #     return wd
-    return (1 if wd == 6 else wd) * -1
-
-
-@app.template_filter('month')
-def month(dt, fmt='%Y-%m-%d'):
-    d = make_date(dt, fmt)
-    return d.month
-
-@app.template_filter('edt')
-def edt(dt, fmt='%Y-%m-%d'):
-    d = make_date(dt, fmt)
-    nextMonth = d + relativedelta(months=1)
-    return (nextMonth - timedelta(1)).day + 1
-
+from helloflask.utils.util import make_date
 
 @app.route('/')
 def idx():
-    rds = []
-    for i in [1,2,3]:
-        id = 'r' + str(i)
-        name = 'radiotest'
-        value = i
-        checked = ''
-        if i == 2:
-            checked = 'checked'
-        text = 'RadioTest' + str(i)
-        rds.append( FormInput(id, name, value, checked, text) )
-
-    # today = date.today()
-    # today = datetime.now()
-    # today = datetime.strptime('2019-02-14 09:22', '%Y-%m-%d %H:%M')
-    today = '2019-02-14 09:22'
-    d = datetime.strptime("2019-03-01", "%Y-%m-%d")
-
-    # year = 2019
-    year = request.args.get('year', date.today().year, int)
-    return render_template('app.html', year=year, ttt='TestTTT999', radioList=rds, today=today)
+    return routes.idx()
 
 @app.route('/top100')
 def top100():
@@ -118,11 +22,6 @@ def top100():
 def main():
     return render_template('main.html', title="MAIN!!")
 
-class Nav:
-    def __init__(self, title, url='#', children=[]):
-        self.title = title
-        self.url = url
-        self.children = children
 
 
 @app.route('/tmpl3')
