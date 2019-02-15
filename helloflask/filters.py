@@ -1,7 +1,8 @@
-from helloflask.utils.app import app
-from datetime import date, datetime, timedelta
-from helloflask.utils.util import make_date
+from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
+
+from helloflask import app
+from helloflask.utils import make_date
 
 @app.template_filter('ymd')               # cf. Handlebars' helper
 def datetime_ymd(dt, fmt='%m-%d'):

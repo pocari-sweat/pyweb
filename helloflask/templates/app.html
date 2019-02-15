@@ -35,13 +35,11 @@
             <small><a href="/?year={{year + 1}}" class="text-muted">{{year + 1}}</a></small>
         </h1>
         <div class="row">
-        {% for mm in range(1,13) | batch(3) %}
-            {% for m in mm %}
-                <div class="col">
-                {% set dt = "%s-%s-01" % (year, m) %}
-                {{cal(dt)}}
-                </div>
-            {% endfor %}
+        {% for m in range(1,13) %}
+            <div class="col">
+            {% set dt = "%s-%s-01" % (year, m) %}
+            {{cal(dt)}}
+            </div>
         {% endfor %}
         </div>
     </div>
