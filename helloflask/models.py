@@ -1,9 +1,14 @@
 from sqlalchemy import Column, Integer, String
 from helloflask.init_db import Base
 
+class Song(Base):
+    __tablename__ = 'Song'
+    songno = Column(String, primary_key=True)
+    
+
+
 class User(Base):
     __tablename__ = 'User'
-
     id = Column(Integer, primary_key=True)
     email = Column(String, unique=True)
     passwd = Column(String)

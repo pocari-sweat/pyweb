@@ -20,14 +20,15 @@ def idx():
         # db_session.add(u)
 
         s = db_session()
-        result = s.execute('select id, nickname from User where id > :id', {'id': 10})
+        result = s.execute('select id, email, nickname from User where id > :id', {'id': 10})
         Record = namedtuple('User', result.keys())
         rrr = result.fetchall()
         print(">>", type(result), result.keys(), rrr)
         records = [Record(*r) for r in rrr]
         for r in records:
             print(r, r.nickname, type(r))
-        # s.close()
+
+        s.close()
 
         ret = records
 
