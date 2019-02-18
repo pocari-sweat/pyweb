@@ -31,7 +31,7 @@ def sql2():
 # select by each record
 @app.route('/sql')
 def sql():
-    ret = Song.query.options(joinedload(Song.album)).filter(Song.likecnt < 10000).options(joinedload(Song.songartists))
+    ret = Song.query.options(joinedload(Song.album)).filter(Song.likecnt < 10000).options(joinedload(Song.songartists, SongArtist.artist))
     #.options(subqueryload(Song.songartists.artist))
     return render_template('main.html', ret=ret)
 
