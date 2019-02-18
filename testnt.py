@@ -8,7 +8,7 @@ s1 = Song(123, '만남', 100)
 s2 = Song(songno=222, likecnt=200, title='강남스타일')
 s2 = s2._replace(likecnt=201)
 s3 = Song._make([333, 'Radio ga ga', 300])
-s4 = Song(444, 'Rady ga ga', 400)
+s4 = Song( (444, 'Rady ga ga', 400) )
 
 d1 = s1._asdict()
 print(d1)
