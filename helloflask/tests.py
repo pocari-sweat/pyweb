@@ -1,7 +1,35 @@
 from flask import render_template, Markup, request, Response, session, make_response, g
 from datetime import datetime, date
+
+from sqlalchemy.orm import subqueryload, joinedload
+from sqlalchemy.exc import SQLAlchemyError
 from helloflask import app
 from helloflask.classes import Nav, FormInput
+
+from helloflask.init_db import db_session
+from helloflask.models import User, Song, Album
+
+@app.route('/addref')
+def addref():
+    aid = 'TTT-a1'
+    a1 = Album.query.filter(Album.albumid==aid)
+    print("a1=----------->>", a1, a1.count())
+    if a1.count() == 0:
+        a1 = Album(albumid=aid, title='TTT-album')
+    else:
+        a1 = a1.one()
+
+    song1 = Song(songno='TTT3', title='TTT3 Title')
+    song1.album = a1
+
+    # 1 : n
+    # song1.albums = [ a1, a2 ]
+    
+    db_session.add(song1)
+    db_session.commit()
+
+    print("song1=", song1)
+    return "OK"
 
 @app.route('/calendar')
 def calendar():

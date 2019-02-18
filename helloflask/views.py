@@ -1,13 +1,21 @@
 from flask import render_template, request, Response
 from datetime import datetime, date
+from sqlalchemy.orm import subqueryload, joinedload
 from sqlalchemy.exc import SQLAlchemyError
 from collections import namedtuple
 from helloflask import app
 from helloflask.classes import FormInput
 from helloflask.init_db import db_session
-from helloflask.models import User, Song, Album
+from helloflask.models import User, Song, Album, Artist, SongArtist
 
-from sqlalchemy.orm import subqueryload, joinedload
+
+@app.route('/sql3')
+def sql3():
+    # albums = Album.query.order_by(Album.albumid.desc()).limit(5)
+    # albums = Album.query.filter(Album.albumid == '10218750').all()
+    albums = Album.query.options(joinedload(Album.songs)).filter_by(albumid = '10218750').all()
+
+    return render_template('main.html', albums=albums)
 
 # pre-load (sametime)
 @app.route('/sql2')
@@ -15,7 +23,7 @@ def sql2():
     # ret = db_session.query(Song).options(subqueryload(Song.album))\
     #       .filter(Song.likecnt < 10000)
 
-    ret = db_session.query(Song).options(joinedload(Song.album))\
+    ret = Song.query.options(joinedload(Song.album))\
               .filter(Song.likecnt < 10000)
 
     return render_template('main.html', ret=ret)
@@ -23,7 +31,8 @@ def sql2():
 # select by each record
 @app.route('/sql')
 def sql():
-    ret = Song.query.filter(Song.likecnt < 10000)
+    ret = Song.query.options(joinedload(Song.album)).filter(Song.likecnt < 10000).options(joinedload(Song.songartists))
+    #.options(subqueryload(Song.songartists.artist))
     return render_template('main.html', ret=ret)
 
 

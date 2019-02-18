@@ -6,9 +6,31 @@
     {{ super() }}
     aaaaaaaaaaaa
     <div>
+        <h1>Albums</h1>
+        <ul>
+        {% for a in albums %}
+        <li>
+            {{a.albumid}}. {{a.title}} ({{a.likecnt}}) - <strong>{{a.songs | length}}</strong>
+            <ul>
+            {% for ss in a.songs %}
+                <li>{{ss.title}}</li>
+            {% endfor %}
+            </ul>
+        </li>
+        {% endfor %}
+    </ul>
+
+        <h1>Songs</h1>
         <ul>
             {% for s in ret %}
-                <li>{{s.songno}}.{{s.title}} ({{s.likecnt}}) - <strong>{{s.album.title}}</strong></li>
+                <li>
+                    {{s.songno}}.{{s.title}} ({{s.likecnt}}) - <strong>{{s.album.title}}</strong> :: {{s.songartists | length}}
+                    <ul>
+                        {% for sa in s.songartists %}
+                            <li>{{sa.artist.artistid}}. {{sa.artist.name}} ({{sa.atype}})</li>
+                        {% endfor %}
+                    </ul>
+                </li>
             {% else %}
                 <li>There is no ret.</li>
             {% endfor %}
