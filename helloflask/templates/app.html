@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "macro/forms.html" import input, radio, radios, textarea, checkbox, select, modal, cal %}
+{% from "macro/forms.html" import input, radio, radios, textarea, checkbox, select, modal, cal, song %}
 
 {% block test %}
 {% endblock %}
@@ -20,38 +20,7 @@
             <h3><a><strong>Live Top 100</strong></a></h3>
 
             {% for s in lives %}
-            <hr>
-            <!--Small news-->
-            <div class="row">
-                <div class="col-md-2">
-                    <h1 class="text-primary">{{s.rank}}</h1>
-                </div>
-                <div class="col-md-3">
-
-                    <!--Image-->
-                    <div class="view overlay rounded z-depth-1x text-center">
-                        <a>
-                            <!-- <img src="{{url_for('static', filename='img/test.jpg') }}" class="img-fluid w-100" alt="Minor sample post image"> -->
-                            <img src="/static/img/album_img/{{s.rank}}.jpg" class="img-fluid w-100" alt="Minor sample post image">
-                            <div class="mask rgba-white-slight"></div>
-                        </a>
-                    </div>
-                </div>
-
-                <!--Excerpt-->
-                <div class="col-md-7">
-                    <p class="dark-grey-text">
-                        <strong>{{s.song.title}}</strong> - {{s.song.songartists | artist_names}}
-                    </p>
-                    <a href="#" onclick="openSongInfo('{{s.songno}}')"><small class="text-muted"><i class="fas fa-compact-disc"></i> {{s.song.album.title}}</small>
-                        <i class="fas fa-angle-left float-right text-primary"></i>
-                    </a>
-                </div>
-
-            </div>
-
-            <div id="{{s.songno}}" class="row songinfo" style="display: none;">
-            </div>
+                {{song(s)}}
             {% endfor %}
             <!--/Small news-->
 
@@ -61,6 +30,10 @@
         <!--Grid column-->
         <div class="col-lg-6 col-md-6 col-sm-6">
             <h3><a><strong>Today's Top 100</strong></a></h3>
+
+            {% for s in todays %}
+            {{song(s)}}
+            {% endfor %}
         </div>
         <!--Grid column-->
 
@@ -71,6 +44,20 @@
 <!--/Section: Magazine v.1-->
 
 <script>
+    function addToMyalbum(songno) {
+        var url = "/myalbum";
+        console.log("url>>", url, songno)
+        // url, method, data, dataType, fn
+        var $star = $('#star-' + songno);
+        send_ajax(url, 'POST', {songno: songno}, 'json', function (res) {
+            console.log("res>>", res, res.result, res.result === 'OK')
+            if (res && res.result === 'OK') {
+                console.log("----------------", $star)
+                $star.removeClass('far').addClass('fas');
+            }
+        }); 
+    }
+
     function openSongInfo(songno) {
         var url = "/songinfo/" + songno
         console.log("url>>", url)
@@ -83,5 +70,8 @@
             $songinfo.css('display', 'block');
         });
     }
+
+        
+    
 </script>
 {% endblock %}

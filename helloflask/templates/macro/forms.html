@@ -59,6 +59,42 @@
 </div>
 {%- endmacro %}
 
+{% macro song(s) %}
+<hr>
+<!--Small news-->
+<div class="row">
+    <div class="col-md-2">
+        <h1 class="text-primary">{{s.rank}}</h1>
+    </div>
+    <div class="col-md-3">
+
+        <!--Image-->
+        <div class="view overlay rounded z-depth-1x text-center">
+            <a>
+                <img src="/static/img/album_img/{{s.rank}}.jpg" class="img-fluid w-100" alt="Minor sample post image">
+                <div class="mask rgba-white-slight"></div>
+            </a>
+        </div>
+    </div>
+
+    <!--Excerpt-->
+    <div class="col-md-7">
+        <p class="dark-grey-text">
+            <strong>{{s.song.title}}</strong> - <small class="text-muted">{{s.song.songartists | artist_names | truncate(30)}}</small>
+            <a href="#" onclick="addToMyalbum('{{s.songno}}')"><i class="far fa-star text-warning"
+                    id="star-{{s.songno}}"></i></a>
+        </p>
+        <a href="#" onclick="openSongInfo('{{s.songno}}')"><small class="text-muted"><i class="fas fa-compact-disc"></i>
+                {{s.song.album.title}}</small>
+            <i class="fas fa-angle-left float-right text-primary"></i>
+        </a>
+    </div>
+
+</div>
+
+<div id="{{s.songno}}" class="row songinfo" style="display: none;">
+</div>
+{% endmacro %}
 
 {% macro modal(id, title, icon='', isShowFooter=True, ok_fn='') %}
 <div class="modal fade" id="{{id}}" tabindex="-1" role="dialog"

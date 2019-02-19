@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% from "macro/forms.html" import input, radio, radios, textarea, checkbox, select, modal, cal %}
+
+{% block main %}
+<!--Section: Magazine v.1-->
+<section id="myalbum" class="wow fadeIn">
+
+    <!--Section heading-->
+    <h2 class="h1 text-center my-5 font-weight-bold">My Favorite Songs</h2>
+
+    <!--Grid row-->
+    <div class="row text-left">
+
+        <!--Grid column-->
+        <div class="col-12">
+
+            {% for s in songs %}
+            <hr>
+            <!--Small news-->
+            <div class="row">
+                <div class="col-md-2">
+                    <h1 class="text-primary"></h1>
+                </div>
+                <div class="col-md-3">
+
+                    <!--Image-->
+                    <div class="view overlay rounded z-depth-1x text-center">
+                        <a>
+                            <img src="/static/img/album_img/1.jpg" class="img-fluid w-100"
+                                alt="Minor sample post image">
+                            <div class="mask rgba-white-slight"></div>
+                        </a>
+                    </div>
+                </div>
+
+                <!--Excerpt-->
+                <div class="col-md-7">
+                    <p class="dark-grey-text">
+                        <strong>{{s.song.title}}</strong> - {{s.song.songartists | artist_names}}
+                    </p>
+                </div>
+
+            </div>
+
+            {% else %}
+                <div class="text-center text-info">담겨진 곡이 없습니다.</div>
+            {% endfor %}
+            <!--/Small news-->
+
+        </div>
+        <!--Grid column-->
+
+    </div>
+    <!--Grid row-->
+
+</section>
+<!--/Section: Magazine v.1-->
+
+{% endblock %}

@@ -1,4 +1,4 @@
-from flask import render_template, request, Response, session, jsonify, make_response, redirect, flash
+from flask import render_template, request, Response, session, jsonify, make_response, redirect, flash, url_for
 from datetime import datetime, date
 from sqlalchemy.orm import subqueryload, joinedload
 from sqlalchemy.exc import SQLAlchemyError
@@ -6,7 +6,7 @@ from sqlalchemy.sql import func
 from helloflask import app
 from helloflask.classes import FormInput
 from helloflask.init_db import db_session
-from helloflask.models import User, Song, Album, Artist, SongArtist, SongRank, SongInfo
+from helloflask.models import User, Song, Album, Artist, SongArtist, SongRank, SongInfo, Myalbum
 
 def songlist(dt):
     sr = SongRank.query.filter_by(rankdt=dt).options(joinedload(SongRank.song))
@@ -14,6 +14,36 @@ def songlist(dt):
     sr = sr.options(joinedload(SongRank.song, Song.songartists))
     sr = sr.filter("atype=0")
     return sr
+
+@app.route('/myalbum', methods=['GET'])
+def myalbum():
+    if not session.get('loginUser'):
+        session['next'] = request.url
+        return redirect('/login')
+        # return redirect( url_for('login', next=request.url) )
+
+    loginUser = session.get('loginUser')
+    songs = Myalbum.query.filter('userid=:userid').params(userid=loginUser.get('userid')).all()
+
+    if request.is_xhr:
+        return jsonify([s.json() for s in songs])
+        
+    return render_template("myalbum.html", songs=songs)
+
+
+@app.route('/myalbum', methods=['POST'])
+def myalbum_post():
+    songno = request.form.get('songno')
+    myalbum = Myalbum(session.get('loginUser').get('userid'), songno)
+    try:
+        db_session.add(myalbum)
+        db_session.commit();
+        
+    except SQLAlchemyError as err:
+        db_session.rollback()
+        print("Error!!", err)
+
+    return jsonify({"result": 'OK'})
 
 @app.route('/')
 def idx():
@@ -57,7 +87,11 @@ def login_post():
     passwd = request.form.get('passwd')
     u = User.query.filter('email = :email and passwd = sha2(:passwd, 256)').params(email=email, passwd=passwd).first()
     if u is not None:
-        session['loginUser'] = { 'useid': u.id, 'name': u.nickname }
+        session['loginUser'] = { 'userid': u.id, 'name': u.nickname }
+        if session.get('next'):
+            next = session.get('next')
+            del session['next']
+            return redirect(next)
         return redirect('/')
     else:
         flash("해당 사용자가 없습니다!!")
@@ -77,3 +111,4 @@ def songinfo(songno):
     songinfos = SongInfo.query.filter_by(songno = songno)
     print("===>", songinfos.count())
     return render_template("songinfo.html", song=song, songinfos=songinfos)
+

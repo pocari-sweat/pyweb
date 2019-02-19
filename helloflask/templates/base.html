@@ -85,6 +85,26 @@
                 console.log("The request is complete!");
             });
         }
+
+        $(document).ready(function () {
+            var path = '{{request.path}}';
+            console.log("path>>", path)
+            if (path === '/') {
+                send_ajax('/myalbum', 'GET', '', 'json', function (res) {
+                    console.log("res>>", res)
+                    if (!res || !res.length) return;
+
+                    res.forEach( function(r) {
+                        console.log("rrrr>>", r.songno)
+                        $('#star-' + r.songno).removeClass('far').addClass('fas');
+                    });
+                    // if (res && res.result === 'OK') {
+                    //     console.log("----------------", $star)
+                    // $star.removeClass('far').addClass('fas');
+                    // }
+                });
+            }
+        })
     </script>
 </body>
 

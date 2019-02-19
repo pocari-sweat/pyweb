@@ -56,9 +56,6 @@ class SongArtist(Base):
     def atype_name(self):
         return get_atype_name(self.atype)
 
-    def json(self):
-       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
 class Artist(Base):
     __tablename__ = 'Artist'
     artistid = Column(String, primary_key=True)
@@ -67,6 +64,22 @@ class Artist(Base):
     songartists = relationship('SongArtist')
     def atype_name(self):
         return get_atype_name(self.atype)
+
+
+class Myalbum(Base):
+    __tablename__ = 'Myalbum'
+    def __init__(self, userid, songno):
+        self.userid = userid
+        self.songno = songno
+
+    id = Column(Integer, primary_key=True)
+    userid = Column(Integer)
+    songno = Column(String, ForeignKey('Song.songno'))
+    song = relationship('Song')
+
+    def json(self):
+       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
 
 class SongInfo(Base):
     __tablename__ = 'v_sa_grp'
