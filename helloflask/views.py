@@ -1,4 +1,4 @@
-from flask import render_template, request, Response, session, jsonify, make_response, redirect
+from flask import render_template, request, Response, session, jsonify, make_response, redirect, flash
 from datetime import datetime, date
 from sqlalchemy.orm import subqueryload, joinedload
 from sqlalchemy.exc import SQLAlchemyError
@@ -22,6 +22,32 @@ def idx():
 
     return render_template("app.html", lives=lives, todays=todays)
 
+
+@app.route('/regist', methods=['GET'])
+def regist():
+    return render_template("regist.html")
+
+@app.route('/regist', methods=['POST'])
+def regist_post():
+    email = request.form.get('email')
+    passwd = request.form.get('passwd')
+    passwd2 = request.form.get('passwd2')
+    nickname = request.form.get('email')
+
+    if passwd != passwd2:
+        flash("암호를 정확히 입력하세요!!")
+        return render_template("regist.html", email=email, nickname=nickname)
+    else:
+        u = User(email, passwd, nickname)
+        try:
+            db_session.add(u)
+            db_session.commit()
+
+        except:
+            db_session.rollback();
+            
+        return redirect("/login")
+
 @app.route('/login', methods=['GET'])
 def login():
     return render_template("login.html")
@@ -31,19 +57,17 @@ def login_post():
     email = request.form.get('email')
     passwd = request.form.get('passwd')
     u = User.query.filter('email = :email and passwd = sha2(:passwd, 256)').params(email=email, passwd=passwd).first()
-    print("uuuuuuuuuuuuuu>>", u)
     if u is not None:
-        session['loginUserId'] = u.id
-        session['loginUserName'] = u.nickname
+        session['loginUser'] = { 'useid': u.id, 'name': u.nickname }
         return redirect('/')
     else:
+        flash("해당 사용자가 없습니다!!")
         return render_template("login.html", email=email)
 
 @app.route('/logout')
 def logout():
-    if session.get('loginUserId'):
-        del session['loginUserId']
-        del session['loginUserName']
+    if session.get('loginUser'):
+        del session['loginUser']
 
     return redirect('/')
 

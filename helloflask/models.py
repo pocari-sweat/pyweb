@@ -78,8 +78,9 @@ class User(Base):
     passwd = Column(String)
     nickname = Column(String)
 
-    def __init__(self, email=None, nickname='손님'):
+    def __init__(self, email=None, passwd=None, nickname='손님'):
         self.email = email
+        self.passwd = passwd
         self.nickname = nickname
 
     def __repr__(self):

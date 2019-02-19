@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block main %}
-<form action="/login" method="POST" class="text-center border border-light p-5">
+<form action="/regist" method="POST" class="text-center border border-light p-5">
     {% for message in get_flashed_messages() %}
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
         <strong>{{message}}</strong>
@@ -10,13 +10,17 @@
         </button>
     </div>
     {% endfor %}
-    <p class="h4 mb-4"><strong>Sign In</strong></p>
+    <p class="h4 mb-4"><strong>Sign Up</strong></p>
 
     <!-- Email -->
-    <input type="email" id="defaultLoginFormEmail" name="email" class="form-control mb-4" placeholder="E-mail" value="{{email}}" required>
-
+    <input type="email" id="defaultLoginFormEmail" name="email" class="form-control mb-4" placeholder="이메일..." value="{{email}}" required>
+    
     <!-- Password -->
-    <input type="password" id="defaultLoginFormPassword" name="passwd" class="form-control mb-4" placeholder="Password" required>
+    <input type="password" id="defaultLoginFormPassword" name="passwd" class="form-control mb-4" placeholder="암호..." required>
+    <input type="password" id="defaultLoginFormPassword2" name="passwd2" class="form-control mb-4" placeholder="암호 확인..."
+        required>
+    
+    <input type="text" id="defaultLoginFormNickname" name="nickname" class="form-control mb-4" placeholder="별명..." value="{{nickname}}">
 
     <div class="d-flex justify-content-around">
         <div>
