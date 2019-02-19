@@ -1,7 +1,6 @@
-from sqlalchemy import Column, Integer, Float, String, ForeignKey, PrimaryKeyConstraint
+from sqlalchemy import Column, Integer, Float, String, ForeignKey, PrimaryKeyConstraint, func
 from sqlalchemy.orm import relationship, backref
 from helloflask.init_db import Base
-
 
 class Album(Base):
     __tablename__ = 'Album'
@@ -78,9 +77,12 @@ class User(Base):
     passwd = Column(String)
     nickname = Column(String)
 
-    def __init__(self, email=None, passwd=None, nickname='손님'):
+    def __init__(self, email=None, passwd=None, nickname='손님', makeSha=False):
         self.email = email
-        self.passwd = passwd
+        if makeSha:
+            self.passwd = func.sha2(passwd, 256)
+        else:
+            self.passwd = passwd
         self.nickname = nickname
 
     def __repr__(self):

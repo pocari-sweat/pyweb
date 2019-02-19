@@ -19,9 +19,7 @@ def songlist(dt):
 def idx():
     lives = songlist('2019-01-29')
     todays = songlist('2019-01-28')
-
     return render_template("app.html", lives=lives, todays=todays)
-
 
 @app.route('/regist', methods=['GET'])
 def regist():
@@ -32,20 +30,21 @@ def regist_post():
     email = request.form.get('email')
     passwd = request.form.get('passwd')
     passwd2 = request.form.get('passwd2')
-    nickname = request.form.get('email')
+    nickname = request.form.get('nickname')
 
     if passwd != passwd2:
         flash("암호를 정확히 입력하세요!!")
         return render_template("regist.html", email=email, nickname=nickname)
     else:
-        u = User(email, passwd, nickname)
+        u = User(email, passwd, nickname, True)
         try:
             db_session.add(u)
             db_session.commit()
 
         except:
             db_session.rollback();
-            
+
+        flash("%s 님, 가입을 환영합니다!" % nickname)
         return redirect("/login")
 
 @app.route('/login', methods=['GET'])
