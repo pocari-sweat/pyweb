@@ -35,6 +35,16 @@ class SongArtist(Base):
     artist = relationship('Artist')
     __table_args__ = (PrimaryKeyConstraint('songno', 'artistid', 'atype'), {})
 
+    def atype_name(self):
+        if self.atype == 1:
+            return "작사"
+        elif self.atype == 2:
+            return "작곡"
+        elif self.atype == 3:
+            return "편곡"
+        else:
+            return "노래"
+
 
 class Artist(Base):
     __tablename__ = 'Artist'

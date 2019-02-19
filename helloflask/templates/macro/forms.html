@@ -59,6 +59,7 @@
 </div>
 {%- endmacro %}
 
+
 {% macro modal(id, title, icon='', isShowFooter=True, ok_fn='') %}
 <div class="modal fade" id="{{id}}" tabindex="-1" role="dialog"
     aria-hidden="true">
@@ -88,5 +89,29 @@
             {% endif %}
         </div>
     </div>
+</div>
+{% endmacro %}
+
+{% macro cal(dt) %}
+<div class="container text-center">
+    <h1>{{dt | month}} 월</h1>
+    <table class="table table-bordered table-sm">
+        <thead>
+            <tr>
+                {%- for w in '일월화수목금토' %}
+                <th>{{w}}</th>
+                {% endfor -%}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in range(dt | sdt, dt | edt) | batch(7, '&nbsp;') %}
+            <tr>
+                {% for col in row %}
+                <td>{% if ((col|int) <= 0) %}&nbsp;{%else%}{{col | safe}}{%endif%}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endmacro %}

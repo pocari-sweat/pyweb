@@ -1,101 +1,7 @@
 {% extends "base.html" %}
-{% import "macro/tests.html" as cm with context %}
-{% from "macro/tests.html" import test_macro %}
-{% from "macro/forms.html" import input, radio, radios, textarea, checkbox, select, modal %}
-
-{% macro cal(dt) %}
-    <div class="container text-center">
-        <h1>{{dt | month}} 월</h1>
-        <table class="table table-bordered table-sm">
-            <thead>
-                <tr>
-                    {%- for w in '일월화수목금토' %}
-                        <th>{{w}}</th>
-                    {% endfor -%}
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in range(dt | sdt, dt | edt) | batch(7, '&nbsp;') %}
-                <tr>
-                    {% for col in row %}
-                        <td>{% if ((col|int) <= 0) %}&nbsp;{%else%}{{col | safe}}{%endif%}</td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-{% endmacro %}
+{% from "macro/forms.html" import input, radio, radios, textarea, checkbox, select, modal, cal %}
 
 {% block test %}
-    <div>
-        <h1 class="text-center text-danger">
-            <small><a href="/?year={{year - 1}}" class="text-muted">{{year - 1}}</a></small>
-            {{year}}년
-            <small><a href="/?year={{year + 1}}" class="text-muted">{{year + 1}}</a></small>
-        </h1>
-        <div class="row">
-        {% for m in range(1,13) %}
-            <div class="col">
-            {% set dt = "%s-%s-01" % (year, m) %}
-            {{cal(dt)}}
-            </div>
-        {% endfor %}
-        </div>
-    </div>
-
-    <p>{{today | ymd('%H:%M') | safe}}</p>
-    <p>{{today | simpledate | safe}}</p>
-    <p>{{ 3096 | filesizeformat(True) }}</p>
-    <p>{{ "  3096.53456" | float | round(2) }}</p>
-
-    
-
-
-    <pre>
-{{'abc' | center(40)}}
-{{'abcsdfdsaffdsadasa' | center(40)}}
-{{ ('abcsdfdsaffdsadasa' * 5) | wordwrap(40)}}
-{{ ('abcsdfdsaffdsadasa' * 5) | truncate(40)}}
-    </pre>
-    <p>{{ttt}}::{{ cm.test_macro('TTTTTTTT1122333') }}</p>
-    <p>{{ test_macro('QQQQQQQQQQQ') }}</p>
-
-    {% call(x) cm.test_macro2('Hong', 'bbb') %}
-        <p>This is app.html.call block: <strong>{{x}}</strong></p>
-    {% endcall %}
-
-    <form class="container">
-        <div class="form-group">
-            {{radio('r11', 'rdo', 'val1', 'Value1')}}
-            {{radio('r22', 'rdo', 'val2', 'Value2', "checked")}}
-            {{radio('r33', 'rdo', 'val3', 'Value3')}}
-        </div>
-
-        {{radios(radioList)}}
-
-        {{textarea('idta', 'content', 'default value')}}
-
-        {{checkbox( dict(id='chk1', name='chkname1', checked='checked', text="TEXT") )}}
-
-        {{select([ dict(id='selid1', text='seltext1', selected=False), dict(id='selid2', text='seltext2', selected=True)])}}
-    </form>
-
-    <button type="button" onclick="openModal('mdl1')" class="btn btn-primary">Open
-        modal Test</button>
-
-    {% call modal('mdl1', '테스트 모달', 'fas fa-users', True, "fn_test()") %}
-        <h3>Modal body</h3>
-        <script>
-            function fn_test() {
-                alert('qqqqqqqqqqqqqqqqqqqqq');
-                closeModal('mdl1');
-            }
-        </script>
-    {% endcall %}
-
-
-    {{input('password')}}
 {% endblock %}
 
 {% block main %}
@@ -103,54 +9,23 @@
 <section id="magazine" class="wow fadeIn">
 
     <!--Section heading-->
-    <h2 class="h1 text-center my-5 font-weight-bold">Melon Top 100</h2>
+    <h2 class="h1 text-center my-5 font-weight-bold">K-POP Top 100</h2>
 
     <!--Grid row-->
     <div class="row text-left">
 
         <!--Grid column-->
-        <div class="col-lg-6 col-md-6">
+        <div class="col-lg-6 col-md-6 col-sm-6">
 
-            <!--Image-->
-            <div class="view overlay rounded z-depth-1-half mb-3">
-                <img src="https://mdbootstrap.com/img/Photos/Others/images/77.jpg" class="img-fluid" alt="Sample post image">
-                <a>
-                    <div class="mask rgba-white-slight"></div>
-                </a>
-            </div>
-
-            <!--Excerpt-->
-            <div class="news-data">
-                <a href="" class="light-blue-text">
-                    <h6>
-                        <i class="fas fa-music"></i>
-                        <strong> Songs</strong>
-                    </h6>
-                </a>
-                <p>
-                    <strong>
-                        <i class="far fa-clock"></i> 2019-02-08</strong>
-                </p>
-            </div>
-            <h3>
-                <a>
-                    <strong>Today's Top 100</strong>
-                </a>
-            </h3>
-            <!-- <p> Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
-              placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.
-            </p> -->
-
-            <!--/Featured news-->
+            <h3><a><strong>Live Top 100</strong></a></h3>
 
             <hr>
-
             <!--Small news-->
             <div class="row">
                 <div class="col-md-2">
                     <h1 class="text-primary">100</h1>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
 
                     <!--Image-->
                     <div class="view overlay rounded z-depth-1x text-center">
@@ -162,7 +37,7 @@
                 </div>
 
                 <!--Excerpt-->
-                <div class="col-md-8">
+                <div class="col-md-7">
                     <p class="dark-grey-text">
                         <strong>넘쳐흘러</strong> - 엠시더맥스
                     </p>
@@ -186,184 +61,12 @@
 
             <!--/Small news-->
 
-            <hr>
-
-            <!--Small news-->
-            <div class="row">
-                <div class="col-md-3">
-
-                    <!--Image-->
-                    <div class="view overlay rounded z-depth-1">
-                        <img src="https://mdbootstrap.com/img/Photos/Others/images/54.jpg" class="img-fluid" alt="Minor sample post image">
-                        <a>
-                            <div class="mask rgba-white-slight"></div>
-                        </a>
-                    </div>
-                </div>
-
-                <!--Excerpt-->
-                <div class="col-md-9">
-                    <p class="dark-grey-text">
-                        <strong>18/08/2018</strong>
-                    </p>
-                    <a>Soluta nobis est eligendi
-                        <i class="fas fa-angle-right float-right"></i>
-                    </a>
-                </div>
-
-            </div>
-            <!--/Small news-->
-
-            <hr>
-
-            <!--Small news-->
-            <div class="row">
-                <div class="col-md-3">
-
-                    <!--Image-->
-                    <div class="view overlay rounded z-depth-1">
-                        <img src="https://mdbootstrap.com/img/Photos/Others/images/49.jpg" class="img-fluid" alt="Minor sample post image">
-                        <a>
-                            <div class="mask rgba-white-slight"></div>
-                        </a>
-                    </div>
-                </div>
-
-                <!--Excerpt-->
-                <div class="col-md-9">
-                    <p class="dark-grey-text">
-                        <strong>17/08/2018</strong>
-                    </p>
-                    <a>Voluptatem accusantium doloremque
-                        <i class="fas fa-angle-right float-right"></i>
-                    </a>
-                </div>
-
-            </div>
-            <!--/Small news-->
-
         </div>
         <!--Grid column-->
 
         <!--Grid column-->
-        <div class="col-lg-6 col-md-6">
-
-            <!--Image-->
-            <div class="view overlay rounded z-depth-1-half mb-3">
-                <img src="https://mdbootstrap.com/img/Photos/Others/images/32.jpg" class="img-fluid" alt="Sample post image">
-                <a>
-                    <div class="mask rgba-white-slight"></div>
-                </a>
-            </div>
-
-            <!--Excerpt-->
-            <div class="news-data">
-                <a href="" class="light-blue-text">
-                    <h6>
-                        <i class="fas fa-plane"></i>
-                        <strong> Travels</strong>
-                    </h6>
-                </a>
-                <p>
-                    <strong>
-                        <i class="far fa-clock"></i> 20/08/2018</strong>
-                </p>
-            </div>
-            <h3>
-                <a>
-                    <strong>This is title of the news</strong>
-                </a>
-            </h3>
-            <p> Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime
-                placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus.
-            </p>
-
-            <!--/Featured news-->
-
-            <hr>
-
-            <!--Small news-->
-            <div class="row">
-                <div class="col-md-3">
-
-                    <!--Image-->
-                    <div class="view overlay rounded z-depth-1">
-                        <img src="https://mdbootstrap.com/img/Photos/Others/photo11.jpg" class="img-fluid" alt="Minor sample post image">
-                        <a>
-                            <div class="mask rgba-white-slight"></div>
-                        </a>
-                    </div>
-                </div>
-
-                <!--Excerpt-->
-                <div class="col-md-9">
-                    <p class="dark-grey-text">
-                        <strong>19/08/2018</strong>
-                    </p>
-                    <a>Lorem ipsum dolor sit amet
-                        <i class="fas fa-angle-right float-right"></i>
-                    </a>
-                </div>
-
-            </div>
-            <!--/Small news-->
-
-            <hr>
-
-            <!--Small news-->
-            <div class="row">
-                <div class="col-md-3">
-
-                    <!--Image-->
-                    <div class="view overlay rounded z-depth-1">
-                        <img src="https://mdbootstrap.com/img/Photos/Others/images/51.jpg" class="img-fluid" alt="Minor sample post image">
-                        <a>
-                            <div class="mask rgba-white-slight"></div>
-                        </a>
-                    </div>
-                </div>
-
-                <!--Excerpt-->
-                <div class="col-md-9">
-                    <p class="dark-grey-text">
-                        <strong>18/08/2018</strong>
-                    </p>
-                    <a>Soluta nobis est eligendi
-                        <i class="fas fa-angle-right float-right"></i>
-                    </a>
-                </div>
-
-            </div>
-            <!--/Small news-->
-
-            <hr>
-
-            <!--Small news-->
-            <div class="row">
-                <div class="col-md-3">
-
-                    <!--Image-->
-                    <div class="view overlay rounded z-depth-1">
-                        <img src="https://mdbootstrap.com/img/Photos/Others/images/44.jpg" class="img-fluid" alt="Minor sample post image">
-                        <a>
-                            <div class="mask rgba-white-slight"></div>
-                        </a>
-                    </div>
-                </div>
-
-                <!--Excerpt-->
-                <div class="col-md-9">
-                    <p class="dark-grey-text">
-                        <strong>17/08/2018</strong>
-                    </p>
-                    <a>Voluptatem accusantium doloremque
-                        <i class="fas fa-angle-right float-right"></i>
-                    </a>
-                </div>
-
-            </div>
-            <!--/Small news-->
-
+        <div class="col-lg-6 col-md-6 col-sm-6">
+            <h3><a><strong>Today's Top 100</strong></a></h3>
         </div>
         <!--Grid column-->
 
