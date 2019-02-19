@@ -6,11 +6,18 @@ from sqlalchemy.sql import func
 from helloflask import app
 from helloflask.classes import FormInput
 from helloflask.init_db import db_session
-from helloflask.models import User, Song, Album, Artist, SongArtist
+from helloflask.models import User, Song, Album, Artist, SongArtist, SongRank
 
 @app.route('/')
 def idx():
-    return render_template("app.html")
+    livedt = '2019-01-29'
+    today = '2019-01-25'
+
+    lives = SongRank.query.filter_by(rankdt = livedt).options(joinedload(SongRank.song))
+    lives = lives.options(joinedload(SongRank.song, Song.album))
+    lives = lives.options(joinedload(SongRank.song, Song.songartists))
+    lives = lives.filter("atype=0")
+    return render_template("app.html", lives=lives)
 
 @app.route('/songinfo/<songno>')
 def songinfo():

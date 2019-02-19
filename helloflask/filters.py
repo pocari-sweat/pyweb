@@ -4,6 +4,11 @@ from dateutil.relativedelta import relativedelta
 from helloflask import app
 from helloflask.utils import make_date
 
+@app.template_filter('artist_names')
+def artist_names(artists):
+    # ['<a href="/artists/%s">%s</a>' % (a.artist.artistid, a.artist.name)]
+    return ", ".join([ a.artist.name for a in artists ])
+
 @app.template_filter('ymd')               # cf. Handlebars' helper
 def datetime_ymd(dt, fmt='%m-%d'):
     if isinstance(dt, date):

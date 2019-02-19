@@ -25,6 +25,15 @@ class Song(Base):
     album = relationship('Album')
     songartists = relationship('SongArtist')
 
+class SongRank(Base):
+    __tablename__ = 'SongRank'
+    id = Column(Integer, primary_key=True)
+    rankdt = Column(String)
+    songno = Column(String, ForeignKey('Song.songno'), nullable=False)
+    rank = Column(Integer)
+    song = relationship('Song')
+
+
 
 class SongArtist(Base):
     __tablename__ = 'SongArtist'
