@@ -34,6 +34,16 @@ class SongRank(Base):
     song = relationship('Song')
 
 
+def get_atype_name(atype):
+    if atype == 1:
+        return "작사"
+    elif atype == 2:
+        return "작곡"
+    elif atype == 3:
+        return "편곡"
+    else:
+        return "노래"
+
 class SongArtist(Base):
     __tablename__ = 'SongArtist'
     songno = Column(String, ForeignKey('Song.songno'), nullable=False)
@@ -44,14 +54,7 @@ class SongArtist(Base):
     __table_args__ = (PrimaryKeyConstraint('songno', 'artistid', 'atype'), {})
 
     def atype_name(self):
-        if self.atype == 1:
-            return "작사"
-        elif self.atype == 2:
-            return "작곡"
-        elif self.atype == 3:
-            return "편곡"
-        else:
-            return "노래"
+        return get_atype_name(self.atype)
 
     def json(self):
        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -63,12 +66,17 @@ class Artist(Base):
     atype = Column(Integer)
     songartists = relationship('SongArtist')
     def atype_name(self):
-        if self.atype == 1:
-            return "작사"
-        elif self.atype == 2:
-            return "작곡"
-        else:
-            return "노래"
+        return get_atype_name(self.atype)
+
+class SongInfo(Base):
+    __tablename__ = 'v_sa_grp'
+    id = Column(String, primary_key=True)
+    songno = Column(String)
+    names = Column(String)
+    atype = Column(Integer)
+
+    def atype_name(self):
+        return get_atype_name(self.atype)
 
 class User(Base):
     __tablename__ = 'User'

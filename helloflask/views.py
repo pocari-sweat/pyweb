@@ -6,7 +6,7 @@ from sqlalchemy.sql import func
 from helloflask import app
 from helloflask.classes import FormInput
 from helloflask.init_db import db_session
-from helloflask.models import User, Song, Album, Artist, SongArtist, SongRank
+from helloflask.models import User, Song, Album, Artist, SongArtist, SongRank, SongInfo
 
 def songlist(dt):
     sr = SongRank.query.filter_by(rankdt=dt).options(joinedload(SongRank.song))
@@ -71,16 +71,9 @@ def logout():
     return redirect('/')
 
 
-
-
-
-
-
-
-# @app.route('/songinfo/<songno>')
-# def songinfo(songno):
-    # return render_template("app.html")
-    # s = SongArtist.query.filter_by(songno=songno).order_by(SongArtist.atype).options(joinedload(SongArtist.artist)).all()
-    # ll = [ss.json() for ss in s]
-    # print("ssssssssssSS>>", s)
-    # return make_response(jsonify(ll))
+@app.route('/songinfo/<songno>')
+def songinfo(songno):
+    song = Song.query.filter_by(songno = songno).first()
+    songinfos = SongInfo.query.filter_by(songno = songno)
+    print("===>", songinfos.count())
+    return render_template("songinfo.html", song=song, songinfos=songinfos)
