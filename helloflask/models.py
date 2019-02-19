@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, Float, String, ForeignKey, PrimaryKeyCon
 from sqlalchemy.orm import relationship, backref
 from helloflask.init_db import Base
 
+
 class Album(Base):
     __tablename__ = 'Album'
     albumid = Column(String, primary_key=True)
@@ -34,7 +35,6 @@ class SongRank(Base):
     song = relationship('Song')
 
 
-
 class SongArtist(Base):
     __tablename__ = 'SongArtist'
     songno = Column(String, ForeignKey('Song.songno'), nullable=False)
@@ -54,6 +54,8 @@ class SongArtist(Base):
         else:
             return "노래"
 
+    def json(self):
+       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 class Artist(Base):
     __tablename__ = 'Artist'

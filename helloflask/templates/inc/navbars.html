@@ -30,17 +30,21 @@
 
             <!-- Right -->
             <ul class="navbar-nav nav-flex-icons">
+                {% if session.loginUserId %}
+                <li class="nav-item">
+                    <a href="/logout" class="nav-link waves-effect">
+                        <i class="fas fa-user"></i> {{session.loginUserName}}
+                    </a>
+                </li>
+
+                {% else %}
                 <li class="nav-item">
                     <a href="/login" id="btnSingin" class="nav-link waves-effect">
                         <i class="fas fa-sign-in-alt"></i> Sign-In
                     </a>
                 </li>
-
-                <li class="nav-item">
-                    <a href="/logout" class="nav-link waves-effect">
-                        <i class="fas fa-user"></i> 홍길동
-                    </a>
-                </li>
+                {% endif %}
+                
                 <!-- <li class="nav-item">
               <a href="https://twitter.com/MDBootstrap" class="nav-link waves-effect" target="_blank">
                 <i class="fab fa-twitter"></i>
