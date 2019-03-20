@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Float, String, ForeignKey, PrimaryKeyConstraint, func
+from sqlalchemy import Column, Integer, Float, String, DateTime, TIMESTAMP, ForeignKey, PrimaryKeyConstraint, func
 from sqlalchemy.orm import relationship, backref
 from helloflask.init_db import Base
 
@@ -80,6 +80,25 @@ class Myalbum(Base):
     def json(self):
        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
+class Mycom(Base):
+    __tablename__ = 'Mycom'
+
+    def __init__(self, myalbumid, writer, content):
+        self.myalbumid = myalbumid
+        self.writer = writer
+
+    id = Column(Integer, primary_key=True)
+    myalbumid = Column(Integer)
+    writer = Column(Integer, ForeignKey('User.id'))
+    user = relationship('User')
+    content = Column(String)
+    writedate = Column(TIMESTAMP)
+
+    def json(self):
+        j = {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        j['writername'] = self.user.nickname
+        return j
+    #    return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 class SongInfo(Base):
     __tablename__ = 'v_sa_grp'
@@ -108,3 +127,28 @@ class User(Base):
 
     def __repr__(self):
         return 'User %s, %r, %r' % (self.id, self.email, self.nickname)
+
+
+class Ttt(Base):
+    __tablename__ = 'Ttt'
+
+    def __init__(self, myalbum, writer, content):
+        self.myalbum = myalbum
+        self.writer = writer
+        self.content = content
+
+    id = Column(Integer, primary_key=True)
+    myalbum = Column(Integer, ForeignKey('Myalbum.id'))
+    writer = Column(Integer, ForeignKey('User.id'))
+    content = Column(String)
+    # writedate = Column(TIMESTAMP(timezone=True))
+    writedate = Column(String)
+    user = relationship('User')
+
+    def json(self):
+        print("99999999999999999999999999999999999999999",
+              self.user.nickname, self.__table__.columns)
+        # j = {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        j = {c: getattr(self, c) for c in ['content', 'writedate']}
+        j['writername'] = self.user.nickname
+        return j

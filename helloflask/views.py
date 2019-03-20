@@ -6,7 +6,9 @@ from sqlalchemy.sql import func
 from helloflask import app
 from helloflask.classes import FormInput
 from helloflask.init_db import db_session
-from helloflask.models import User, Song, Album, Artist, SongArtist, SongRank, SongInfo, Myalbum
+from helloflask.models import User, Song, Album, Artist, SongArtist, SongRank, SongInfo, Myalbum, Mycom
+
+from helloflask.models import Ttt
 
 def songlist(dt):
     sr = SongRank.query.filter_by(rankdt=dt).options(joinedload(SongRank.song))
@@ -14,6 +16,13 @@ def songlist(dt):
     sr = sr.options(joinedload(SongRank.song, Song.songartists))
     sr = sr.filter("atype=0")
     return sr
+
+
+@app.route('/mycoms/<myalbumid>', methods=['GET'])
+def mycoms(myalbumid):
+    cmts = Mycom.query.filter('myalbumid=:myalbumid').params(
+        myalbumid=myalbumid).order_by(Mycom.id.desc()).all()
+    return jsonify([s.json() for s in cmts])
 
 @app.route('/myalbum', methods=['GET'])
 def myalbum():
@@ -112,3 +121,27 @@ def songinfo(songno):
     print("===>", songinfos.count())
     return render_template("songinfo.html", song=song, songinfos=songinfos)
 
+
+@app.route('/ttt2/<myal>', methods=['GET'])
+def ttt2(myal):
+
+    ttts = Ttt.query.filter('myalbum=:myalid').params(
+        myalid=myal).order_by(Ttt.id).all()
+
+    return jsonify([s.json() for s in ttts])
+
+@app.route('/ttt', methods=['GET'])
+def myalbums():
+    if not session.get('loginUser'):
+        session['next'] = request.url
+        return redirect('/login')
+        # return redirect( url_for('login', next=request.url) )
+
+    loginUser = session.get('loginUser')
+    songs = Myalbum.query.filter('userid=:userid').params(
+        userid=loginUser.get('userid')).all()
+
+    if request.is_xhr:
+        return jsonify([s.json() for s in songs])
+
+    return render_template("ttt2.html", songs=songs)

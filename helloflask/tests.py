@@ -199,6 +199,22 @@ def rc():
     val = request.cookies.get(key)
     return "cookie['" + key + "] = " + val + " , " + session.get('Token')
 
+@app.route('/writesession')
+def writesession():
+    key = request.args.get('key')
+    val = request.args.get('val')
+    session[key] = val
+    return "OK"
+
+@app.route('/readsession')
+def readsession():
+    key = request.args.get('key')
+    return "%s = %s" % (key, session.get(key))
+
+@app.route('/clearsession')
+def clearsession():
+    session.clear()
+    return "Session Cleared!"
 
 @app.route('/delsess')
 def delsess():

@@ -45,6 +45,8 @@
     <!--/.Footer-->
 
     <!-- SCRIPTS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/locale/ko.js"></script>
     <!-- JQuery -->
     <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
     <!-- Bootstrap tooltips -->
@@ -53,6 +55,8 @@
     <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
     <!-- MDB core JavaScript -->
     <script type="text/javascript" src="{{ url_for('static', filename='js/mdb.min.js')}}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/handlebars.js')}}"></script>
+    
     <!-- Initializations -->
     <script type="text/javascript">
         // Animations initialization
@@ -84,6 +88,17 @@
             }).always(function (xhr, status) {
                 console.log("The request is complete!");
             });
+        }
+
+        Handlebars.registerHelper('dateformat', function (dt, fmt) {
+            return moment(dt).utc().format(fmt);
+        });
+
+        function hbs(sourceId, data, resultId) {
+            var source = document.getElementById(sourceId).innerHTML;
+            var template = Handlebars.compile(source);
+            var html = template(data);
+            document.getElementById(resultId).innerHTML = html;
         }
 
         $(document).ready(function () {

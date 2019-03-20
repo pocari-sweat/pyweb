@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+
+{% block main %}
+
+<!--Section: Magazine v.1-->
+<section id="myalbum" class="wow fadeIn">
+
+    <!--Section heading-->
+    <h2 class="h1 text-center my-5 font-weight-bold">My Favorite Songs</h2>
+
+    <div id="result_comments"></div>
+
+    <!--Grid row-->
+    <div class="row text-left">
+
+        <!--Grid column-->
+        <div class="col-12">
+
+            {% for s in songs %}
+            <hr>
+            <!--Small news-->
+            <div class="row">
+                <div class="col-md-2">
+                    <h1 class="text-primary"></h1>
+                </div>
+                <div class="col-md-3">
+
+                    <!--Image-->
+                    <div class="view overlay rounded z-depth-1x text-center">
+                        <a>
+                            <img src="/static/img/album_img/1.jpg" class="img-fluid w-100"
+                                alt="Minor sample post image">
+                            <div class="mask rgba-white-slight"></div>
+                        </a>
+                    </div>
+                </div>
+
+                <!--Excerpt-->
+                <div class="col-md-7">
+                    <p class="dark-grey-text">
+                        <strong>{{s.song.title}}</strong> - - {{s.song.songartists | artist_names}}
+                    </p>
+                    <hr>
+                    <script id="comments_template_{{s.id}}" type="text/x-handlebars-template">
+                    {% raw %}
+                        {{#each comments}}
+                        <div class="card">
+                            <div class="card-body p-2">
+                                {{content}}
+                                <small class="text-muted float-right">{{dateformat writedate 'M/D hh:mm'}} by {{writername}}</small>
+                            </div>
+                        </div>
+                        {{/each}}
+                    {% endraw %}
+                    </script>
+                    <div id="result_comments_{{s.id}}"></div>
+                    <p><button id="btn_open_{{s.id}}" onclick="openComments({{s.id}})" class="btn btn-sm btn-primary">Open</button></p>
+                </div>
+
+            </div>
+
+            {% else %}
+                <div class="text-center text-info">담겨진 곡이 없습니다.</div>
+            {% endfor %}
+            <!--/Small news-->
+
+        </div>
+        <!--Grid column-->
+
+    </div>
+    <!--Grid row-->
+
+</section>
+<!--/Section: Magazine v.1-->
+
+<script>
+    Handlebars.registerHelper('dateformat', function (a, b) {
+        // return moment(a).utc().fromNow();
+        return moment(a).utc().format(b);
+    });
+
+    function openComments(myal) {
+        var url = "/ttt2/" + myal;
+        var $btn = $('#btn_open_' + myal);
+        send_ajax(url, 'GET', '', '', function (res) {
+            console.log("res>>", res)
+            $btn.hide();
+            hbs('comments_template_' + myal, {comments: res}, 'result_comments_' + myal);
+        }); 
+    }
+
+    function hbs(sourceId, data, resultId) {
+        console.log("#" + sourceId, data, resultId)
+        var source = document.getElementById(sourceId).innerHTML;
+        var template = Handlebars.compile(source);
+        var html = template(data);
+        document.getElementById(resultId).innerHTML = html;
+    }
+</script>
+
+{% endblock %}
