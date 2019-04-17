@@ -22,7 +22,43 @@ def songlist(dt):
 def mycoms(myalbumid):
     cmts = Mycom.query.filter('myalbumid=:myalbumid').params(
         myalbumid=myalbumid).order_by(Mycom.id.desc()).all()
-    return jsonify([s.json() for s in cmts])
+    loginUser = session.get('loginUser')
+    loginId = loginUser.get('userid')
+    return jsonify([s.json(loginId) for s in cmts])
+
+@app.route('/mycoms/<myalbumid>', methods=['DELETE'])
+def mycoms_delete(myalbumid):
+    print("DDDDDDDDDDDDDDDDD>>>", request.form.get('mycomid'))
+    try:
+        Mycom.query.filter(Mycom.id == request.form.get('mycomid')).delete()
+        db_session.commit()
+
+    except SQLAlchemyError as err:
+        db_session.rollback()
+        print("Error!!", err)
+
+    return jsonify({"result": 'OK'})
+
+@app.route('/mycoms/<myalbumid>', methods=['POST'])
+def mycoms_post(myalbumid):
+    if not session.get('loginUser'):
+        session['next'] = request.url
+        return redirect('/login')
+
+    loginUser = session.get('loginUser')
+    content = request.form.get('content')
+    cmt = Mycom(myalbumid, loginUser.get('userid'), content)
+
+    try:
+        db_session.add(cmt)
+        db_session.commit()
+
+    except SQLAlchemyError as err:
+        db_session.rollback()
+        print("Error!!", err)
+
+    return jsonify({"result": 'OK'})
+
 
 @app.route('/myalbum', methods=['GET'])
 def myalbum():
@@ -32,7 +68,8 @@ def myalbum():
         # return redirect( url_for('login', next=request.url) )
 
     loginUser = session.get('loginUser')
-    songs = Myalbum.query.filter('userid=:userid').params(userid=loginUser.get('userid')).all()
+    loginId = loginUser.get('userid')
+    songs = Myalbum.query.filter('userid=:userid').params(userid=loginId).all()
 
     if request.is_xhr:
         return jsonify([s.json() for s in songs])
@@ -78,7 +115,7 @@ def regist_post():
         u = User(email, passwd, nickname, True)
         try:
             db_session.add(u)
-            db_session.commit()
+            db_session.commit() 
 
         except:
             db_session.rollback();
@@ -145,3 +182,32 @@ def myalbums():
         return jsonify([s.json() for s in songs])
 
     return render_template("ttt2.html", songs=songs)
+
+
+@app.route('/ttt2/<myalbumid>', methods=['POST'])
+def ttt_post(myalbumid):
+    content = request.form.get('content')
+    mycom = Ttt(myalbumid, session.get('loginUser').get('userid'), content)
+    try:
+        db_session.add(mycom)
+        db_session.commit()
+
+    except SQLAlchemyError as err:
+        db_session.rollback()
+        print("Error!!", err)
+
+    return jsonify({"result": 'OK', 'mycom': mycom.json()})
+
+
+@app.route('/ttt2/<myalbumid>', methods=['DELETE'])
+def ttt_delete(myalbumid):
+    try:
+        # db_session.query(Ttt).
+        Ttt.query.filter(Ttt.id == myalbumid).delete()
+        db_session.commit()
+
+    except SQLAlchemyError as err:
+        db_session.rollback()
+        print("Error!!", err)
+
+    return jsonify({"result": 'OK'})

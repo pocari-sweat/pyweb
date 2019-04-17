@@ -3,7 +3,9 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 mysql_url = "mysql+pymysql://dooo:dooo!@localhost/dadb?charset=utf8"
-engine = create_engine(mysql_url, echo=True, convert_unicode=True)
+engine = create_engine(mysql_url, echo=True,
+                       convert_unicode=True, pool_size=20, max_overflow=0)
+# engine = create_engine(mysql_url, echo=True, convert_unicode=True, connect_args={"options": "-c timezone=utc"})
 
 # Declare & create Session
 db_session = scoped_session(sessionmaker(

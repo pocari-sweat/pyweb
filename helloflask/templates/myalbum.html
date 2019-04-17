@@ -42,21 +42,23 @@
                         <strong>{{s.song.title}}</strong> - {{s.song.songartists | artist_names}}
                     </p>
                     <hr>
-                    
                     <script id="comments_template_{{s.id}}" type="text/x-handlebars-template">
                         {% raw %}
                             {{#each comments}}
-                                <div class="card">
+                                <div id="cmt_{{id}}" class="card">
                                     <div class="card-body p-1">
                                         {{content}}
-                                        <small class="text-muted">{{dateformat writedate "M/D HH:mm"}}</small>
-                                        <small class="text-muted float-right">{{writername}}</small>
+                                        {{#if isMine}}
+                                            <a onclick="deleteCmt({{myalbumid}}, {{id}})" href="#" class="text-danger">x</a>
+                                        {{/if}}
+                                        <small class="text-muted float-right">{{dateformat writedate "M/D HH:mm"}} by <strong>{{writername}}</strong></small>
                                     </div>
                                 </div>
                             {{/each}}
                         {% endraw %}
                     </script>
                     <div id="comments_result_{{s.id}}"></div>
+                    <button onclick="openCmtModal({{s.id}})" class="btn btn-sm btn-success float-right">+</button>
                     <button id="btn_open_{{s.id}}" onclick="openComment({{s.id}})" class="btn btn-sm btn-primary">Open Comment</button>
                 </div>
 
@@ -77,6 +79,7 @@
 <!--/Section: Magazine v.1-->
 
 <script>
+    var currCmt = 0;
     function openComment(myalid) {
         console.log(">>>>>", myalid)
         send_ajax('/mycoms/' + myalid, 'GET', '', '', function (res) {
@@ -85,57 +88,70 @@
 
             hbs('comments_template_' + myalid, {comments: res}, 'comments_result_' + myalid);
         });
-
-        $('#basicExampleModal').modal();
     }
+
+    function deleteCmt(myalid, cmtid) {
+        if (!confirm("Are u sure??")) return;
+
+        send_ajax('/mycoms/' + myalid, 'DELETE', {mycomid: cmtid}, 'json', function (res) {
+            console.log("res>>", res)
+            if (!res || res.result !== 'OK') return;
+
+            $('#cmt_' + cmtid).remove();
+        });
+    }
+
+    function saveCmt() {
+        var myalid = currCmt;
+        var $content = $('#content'),
+            content = $content.val();
+
+        if (!content) {
+            alert("내용을 입력하세요!!!");
+            $content.focus();
+            return;
+        }
+
+        // console.log("curr>>", myalid, currCmt)
+        send_ajax('/mycoms/' + myalid, 'POST', {myalbumid: myalid, content: content}, 'json', function (res) {
+            console.log("res>>", res)
+            if (!res || res.result !== 'OK') return;
+
+            $content.val('');
+            $('#mdl_cmt').modal('hide');
+            openComment(myalid);
+        });
+    }
+
+    function openCmtModal(myalid) {
+        currCmt = myalid;
+        $('#mdl_cmt').modal('show');
+    }
+
+
 </script>
 
-<div class="modal fade" id="basicExampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+<div class="modal fade" id="mdl_cmt" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
     aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title" id="exampleModalLabel"><strong><i class="fas fa-sign-in-alt"></i> Sign
-                        In</strong></h3>
+                <h3 class="modal-title" id="exampleModalLabel"><strong><i class="fas fa-pencil-alt"></i> Comment</strong></h3>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <!-- Default form login -->
-                <form class="text-center border border-light p-5">
-
-                    <p class="h4 mb-4"><strong>Sign In</strong></p>
-
-                    <!-- Email -->
-                    <input type="email" id="defaultLoginFormEmail" class="form-control mb-4" placeholder="E-mail">
-
-                    <!-- Password -->
-                    <input type="password" id="defaultLoginFormPassword" class="form-control mb-4"
-                        placeholder="Password">
+                <div class="text-center border border-light p-1">
 
                     <div class="d-flex justify-content-around">
-                        <div>
-                            <!-- Remember me -->
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="defaultLoginFormRemember">
-                                <label class="custom-control-label" for="defaultLoginFormRemember">Remember me</label>
-                            </div>
-                        </div>
-                        <div>
-                            <!-- Forgot password -->
-                            <a href="">Forgot password?</a>
-                        </div>
+                        <textarea id="content" rows="5" class="form-control w-100p" placeholder="comment..."></textarea>
                     </div>
 
                     <!-- Sign in button -->
-                    <button class="btn btn-info btn-block my-4" type="submit">Sign in</button>
-
-                    <!-- Register -->
-                    <p>Not a member?
-                        <a href="">Register</a>
-                    </p>
-                </form>
+                    <button onclick="saveCmt()" class="btn btn-info btn-block my-1"><i class="fas fa-save"></i> Save</button>
+                </div>
                 <!-- Default form login -->
             </div>
             <!-- <div class="modal-footer">

@@ -91,7 +91,9 @@
         }
 
         Handlebars.registerHelper('dateformat', function (dt, fmt) {
-            return moment(dt).utc().format(fmt);
+            console.log("dt=", dt)
+            // return moment(dt).utc().format(fmt);
+            return moment(dt).format(fmt);
         });
 
         function hbs(sourceId, data, resultId) {
@@ -103,7 +105,7 @@
 
         $(document).ready(function () {
             var path = '{{request.path}}';
-            console.log("path>>", path)
+            // console.log("path>>", path)
             if (path === '/') {
                 send_ajax('/myalbum', 'GET', '', 'json', function (res) {
                     console.log("res>>", res)

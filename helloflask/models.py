@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Float, String, DateTime, TIMESTAMP, ForeignKey, PrimaryKeyConstraint, func
+from sqlalchemy import Column, Integer, Float, String, DateTime, TIMESTAMP, ForeignKey, PrimaryKeyConstraint, func, Table
 from sqlalchemy.orm import relationship, backref
 from helloflask.init_db import Base
 
@@ -80,12 +80,17 @@ class Myalbum(Base):
     def json(self):
        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
+class MyalbumTable():
+    def __init__(self):
+        table = Table(self.__tablename__, MetaData(), self.useif, self.song)
+
 class Mycom(Base):
     __tablename__ = 'Mycom'
 
     def __init__(self, myalbumid, writer, content):
         self.myalbumid = myalbumid
         self.writer = writer
+        self.content = content
 
     id = Column(Integer, primary_key=True)
     myalbumid = Column(Integer)
@@ -94,9 +99,11 @@ class Mycom(Base):
     content = Column(String)
     writedate = Column(TIMESTAMP)
 
-    def json(self):
+    def json(self, loginId):
         j = {c.name: getattr(self, c.name) for c in self.__table__.columns}
         j['writername'] = self.user.nickname
+        j['isMine'] = self.writer == loginId
+        j['writedate'] = self.writedate
         return j
     #    return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
@@ -137,6 +144,7 @@ class Ttt(Base):
         self.writer = writer
         self.content = content
 
+    # id = Column(Integer, primary_key=True, autoincrement=True)
     id = Column(Integer, primary_key=True)
     myalbum = Column(Integer, ForeignKey('Myalbum.id'))
     writer = Column(Integer, ForeignKey('User.id'))
@@ -148,7 +156,7 @@ class Ttt(Base):
     def json(self):
         print("99999999999999999999999999999999999999999",
               self.user.nickname, self.__table__.columns)
-        # j = {c.name: getattr(self, c.name) for c in self.__table__.columns}
-        j = {c: getattr(self, c) for c in ['content', 'writedate']}
+        j = {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        # j = {c: getattr(self, c) for c in ['content', 'writedate']}
         j['writername'] = self.user.nickname
         return j
