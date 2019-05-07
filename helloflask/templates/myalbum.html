@@ -29,9 +29,11 @@
                     <!--Image-->
                     <div class="view overlay rounded z-depth-1x text-center">
                         <a>
-                            <img src="/static/img/album_img/1.jpg" class="img-fluid w-100"
-                                alt="Minor sample post image">
-                            <div class="mask rgba-white-slight"></div>
+                            <form id="frm_{{s.id}}" method="POST" enctype="multipart/form-data">
+                                <input id="file_{{s.id}}" type="file" onchange="upload({{s.id}})" style="opacity: 0; width: 0; height: 0;">
+                            </form>
+                            <img id="img_{{s.id}}" src="{% if s.upfile %}{{s.upfile}}{% else %}/static/img/album_img/1.jpg{% endif %}" class="img-fluid w-100" alt="Minor sample post image">
+                            <div class="mask rgba-white-slight" onclick="uploading({{s.id}})"></div>
                         </a>
                     </div>
                 </div>
@@ -40,6 +42,7 @@
                 <div class="col-md-7">
                     <p class="dark-grey-text">
                         <strong>{{s.song.title}}</strong> - {{s.song.songartists | artist_names}}
+                        <a href="/download?filepath={{s.upfile}}">Download</a>
                     </p>
                     <hr>
                     <script id="comments_template_{{s.id}}" type="text/x-handlebars-template">
@@ -79,6 +82,32 @@
 <!--/Section: Magazine v.1-->
 
 <script>
+    function uploading(id) {
+        console.log("uploading!!!!!!!", id)
+        $('#file_' + id).click();
+    }
+
+    function upload(id) {
+        console.log("upload.........")
+        var form = $('#frm_' + id)[0],
+            formData = new FormData(form),
+            file = $("#file_" + id)[0].files[0];
+        formData.append("file", file);
+        formData.append("myalbumid", id);
+        $.ajax({
+            url: '/upload',
+            processData: false,
+            contentType: false,
+            data: formData,
+            type: 'POST',
+            success: function (res) {
+                console.log("res>>", res);
+                if (res && res.path)
+                    $('#img_' + id).attr('src', res.path);
+            }
+        });
+    }
+
     var currCmt = 0;
     function openComment(myalid) {
         console.log(">>>>>", myalid)

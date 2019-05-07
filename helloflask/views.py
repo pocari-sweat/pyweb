@@ -1,4 +1,4 @@
-from flask import render_template, request, Response, session, jsonify, make_response, redirect, flash, url_for 
+from flask import render_template, request, Response, session, jsonify, make_response, redirect, flash, url_for, send_file 
 from datetime import datetime, date
 from sqlalchemy.orm import subqueryload, joinedload
 from sqlalchemy.exc import SQLAlchemyError
@@ -9,6 +9,8 @@ from helloflask.init_db import db_session
 from helloflask.models import User, Song, Album, Artist, SongArtist, SongRank, SongInfo, Myalbum, Mycom
 
 from helloflask.models import Ttt
+import os
+from werkzeug.utils import secure_filename
 
 def songlist(dt):
     sr = SongRank.query.filter_by(rankdt=dt).options(joinedload(SongRank.song))
@@ -18,35 +20,47 @@ def songlist(dt):
     return sr
 
 
+def rename(path):
+    while True:
+        if os.path.isfile(path):
+            idx = path.rindex('.')  
+            if idx == -1:
+                path += '1'
+            else:
+                path = path[:idx] + '1' + path[idx:]
+
+        else:
+            return path
+
 @app.route('/upload', methods=['POST'])
-def upfiles():
-    upfile = request.files['file']
+def upload():
+    upfile = request.files['file']    # aa.jpg
     myalbumid = request.form.get('myalbumid')
-    print("myalbumid=", myalbumid)
-    filename = secure_filename(upfile.filename)
-    path = rename(os.path.join("./helloflask/static/upfiles", filename))
-    upfile.save(path)
-    path = path[12:]
-    print("eeeeeeeeeeeeeeeeeeee", path)
+    print("mmmmmmmmmmmmmmmmmm>>", myalbumid)
 
     try:
-        myalbum = Myalbum.query.filter('id=:id').params(id=myalbumid).first()
+        filename = upfile.filename.replace('..', '')
+        path = rename(os.path.join("./helloflask/static/upfiles", filename))
+        upfile.save(path)
+
+        path = path[12:]
+
+        myalbum = Myalbum.query.filter("id=:id").params(id=myalbumid).first()
         myalbum.upfile = path
         db_session.merge(myalbum)
         db_session.commit()
-
+    
     except SQLAlchemyError as err:
         db_session.rollback()
-        print("Error=", err)
+        print("Error >>", err)
 
     return jsonify({"path": path})
 
-@app.route('/getfile')
-def getFile():
-    path = '.' + request.args.get('file')
-    print("EEEEEEEEEEEEEEEEEEEEEEEE>>", path)
-    return send_file(path, as_attachment=True)
-
+@app.route('/download')
+def download():
+    filepath = request.args.get('filepath')
+    print("filepath=", filepath)
+    return send_file("./" + filepath, as_attachment = True)
 
 @app.route('/mycoms/<myalbumid>', methods=['GET'])
 def mycoms(myalbumid):
