@@ -75,6 +75,7 @@ class Myalbum(Base):
     id = Column(Integer, primary_key=True)
     userid = Column(Integer)
     songno = Column(String, ForeignKey('Song.songno'))
+    upfile = Column(String) # QQQ
     song = relationship('Song')
 
     def json(self):

@@ -1,4 +1,4 @@
-from flask import render_template, request, Response, session, jsonify, make_response, redirect, flash, url_for
+from flask import render_template, request, Response, session, jsonify, make_response, redirect, flash, url_for 
 from datetime import datetime, date
 from sqlalchemy.orm import subqueryload, joinedload
 from sqlalchemy.exc import SQLAlchemyError
@@ -16,6 +16,36 @@ def songlist(dt):
     sr = sr.options(joinedload(SongRank.song, Song.songartists))
     sr = sr.filter("atype=0")
     return sr
+
+
+@app.route('/upload', methods=['POST'])
+def upfiles():
+    upfile = request.files['file']
+    myalbumid = request.form.get('myalbumid')
+    print("myalbumid=", myalbumid)
+    filename = secure_filename(upfile.filename)
+    path = rename(os.path.join("./helloflask/static/upfiles", filename))
+    upfile.save(path)
+    path = path[12:]
+    print("eeeeeeeeeeeeeeeeeeee", path)
+
+    try:
+        myalbum = Myalbum.query.filter('id=:id').params(id=myalbumid).first()
+        myalbum.upfile = path
+        db_session.merge(myalbum)
+        db_session.commit()
+
+    except SQLAlchemyError as err:
+        db_session.rollback()
+        print("Error=", err)
+
+    return jsonify({"path": path})
+
+@app.route('/getfile')
+def getFile():
+    path = '.' + request.args.get('file')
+    print("EEEEEEEEEEEEEEEEEEEEEEEE>>", path)
+    return send_file(path, as_attachment=True)
 
 
 @app.route('/mycoms/<myalbumid>', methods=['GET'])
@@ -48,9 +78,13 @@ def mycoms_post(myalbumid):
     loginUser = session.get('loginUser')
     content = request.form.get('content')
     cmt = Mycom(myalbumid, loginUser.get('userid'), content)
+    cmt.content = content
+    # cmt.id = 7
+    print("77777777777777777777777777777777777777777777777>>", cmt.id)
 
     try:
-        db_session.add(cmt)
+        # db_session.add(cmt)
+        db_session.merge(cmt)
         db_session.commit()
 
     except SQLAlchemyError as err:
@@ -188,6 +222,7 @@ def myalbums():
 def ttt_post(myalbumid):
     content = request.form.get('content')
     mycom = Ttt(myalbumid, session.get('loginUser').get('userid'), content)
+    
     try:
         db_session.add(mycom)
         db_session.commit()
