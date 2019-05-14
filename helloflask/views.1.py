@@ -12,33 +12,6 @@ from helloflask.models import Ttt
 import os
 from werkzeug.utils import secure_filename
 
-from oauth2client.contrib.flask_util import UserOAuth2
-
-app.config['GOOGLE_OAUTH2_CLIENT_SECRETS_FILE'] = 'secret.json'
-app.config['GOOGLE_OAUTH2_CLIENT_ID'] = '1058317413165-7nskl6kcmmqm0ei5feo2rcj0vcje6tr8.apps.googleusercontent.com'
-app.config['GOOGLE_OAUTH2_CLIENT_SECRET'] = 'pF6BYKwJhaEBeXFMKmxIXlQA'
-
-oauth2 = UserOAuth2(app)
-
-@app.route('/google_oauth')
-@oauth2.required
-def google_oauth():
-    print("Google OAuth>> {} ({})".format(oauth2.email, oauth2.user_id))
-
-    u = User.query.filter('email = :email').params(email=oauth2.email).first()
-    if u is not None:
-        session['loginUser'] = {'userid': u.id, 'name': u.nickname}
-        if session.get('next'):
-            next = session.get('next')
-            del session['next']
-            return redirect(next)
-        return redirect('/')
-    else:
-        flash("해당 사용자가 없습니다!!")
-        return render_template("login.html", email=oauth2.email)
-    
-
-
 def songlist(dt):
     sr = SongRank.query.filter_by(rankdt=dt).options(joinedload(SongRank.song))
     sr = sr.options(joinedload(SongRank.song, Song.album))
@@ -58,7 +31,6 @@ def rename(path):
 
         else:
             return path
-
 
 @app.route('/upload', methods=['POST'])
 def upload():
