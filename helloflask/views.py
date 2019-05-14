@@ -15,8 +15,8 @@ from werkzeug.utils import secure_filename
 from oauth2client.contrib.flask_util import UserOAuth2
 
 app.config['GOOGLE_OAUTH2_CLIENT_SECRETS_FILE'] = 'secret.json'
-app.config['GOOGLE_OAUTH2_CLIENT_ID'] = '1058317413165-7nskl6kcmmqm0ei5feo2rcj0vcje6tr8.apps.googleusercontent.com'
-app.config['GOOGLE_OAUTH2_CLIENT_SECRET'] = 'pF6BYKwJhaEBeXFMKmxIXlQA'
+app.config['GOOGLE_OAUTH2_CLIENT_ID'] = os.environ['OAUTH_CLIENT']
+app.config['GOOGLE_OAUTH2_CLIENT_SECRET'] = os.environ['OAUTH_SECRET']
 
 oauth2 = UserOAuth2(app)
 
